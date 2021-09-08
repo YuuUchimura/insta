@@ -1,28 +1,14 @@
-class CommentsController < ApplicationController
-  def create
-    @comment = Comment.new(comment_params)
-    @post = @comment.post
-    if @comment.save
-      respond_to :js
-    else
-      flash[:alert] = "コメントに失敗しました"
-    end
-  end
+Rails.application.routes.draw do
+  devise_for :users,
+    controllers: { registrations: 'registrations' }
 
-  # ==========ここから追加する==========
-  def destroy
-    @comment = Comment.find_by(id: params[:id])
-    @post = @comment.post
-    if @comment.destroy
-      respond_to :js
-    else
-      flash[:alert] = "コメントの削除に失敗しました"
-    end
-  end
-  # ==========ここまで追加する==========
+  root 'posts#index'
 
-  private
-    def comment_params
-      params.required(:comment).permit(:user_id, :post_id, :comment)
-    end
-end
+  get '/users/:id', to: 'users#show', as: 'user'
+
+  resources :posts, only: %i(index new create show destroy) do
+    resources :photos, only: %i(create)
+    resources :likes, only: %i(create destroy)
+    # ここに追加する
+    resources :comments, only: %i(create destroy)
+  end

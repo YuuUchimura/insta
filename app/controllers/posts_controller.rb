@@ -1,14 +1,15 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_post, only: %i(show destroy)
+  before_action :set_post, only: %i[show destroy]
 
   def new
     @post = Post.new
     @post.photos.build
   end
-
+  c = 10
   def create
     @post = Post.new(post_params)
+
     if @post.photos.present?
       @post.save
       redirect_to root_path
@@ -23,8 +24,7 @@ class PostsController < ApplicationController
     @posts = Post.limit(10).includes(:photos, :user).order('created_at DESC')
   end
 
-  def show
-  end
+  def show; end
 
   def destroy
     if @post.user == current_user
